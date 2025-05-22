@@ -1,5 +1,5 @@
 import streamlit
 
-st.title('あいうえお)
+st.title('あいうえお')
 
 st.write('aaaa')
