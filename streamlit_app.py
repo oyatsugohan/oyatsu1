@@ -1,8 +1,8 @@
 import streamlit
 
-st.title('あいうえお')
+st.title('自己紹介')
 
-st.write('aaaa')
+st.write('まずは名前を教えて')
 
 user_name=st.text_imput('名前を入力してください')
 
