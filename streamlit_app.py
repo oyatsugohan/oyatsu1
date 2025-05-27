@@ -1,18 +1,29 @@
-import streamlit as st
+import random
 
-st.title('自己紹介')
+# 単語データ（辞書型）
+word_list = {
+    "apple": "りんご",
+    "book": "本",
+    "dog": "犬",
+    "cat": "猫",
+    "house": "家"
+}
 
-st.write('まずは名前を教えてください')
+def quiz():
+    score = 0
+    words = list(word_list.items())
+    random.shuffle(words)
 
-user_name=st.text_input('名前を入力してください')
+    for eng, jp in words:
+        print(f"\nQ: 「{jp}」の英語は？")
+        answer = input("Your answer: ").strip().lower()
+        if answer == eng:
+            print("✅ 正解！")
+            score += 1
+        else:
+            print(f"❌ 不正解。正解は「{eng}」です。")
 
-st.header('あなたの名前は'+str(user_name)+'です')
+    print(f"\n🎉 結果：{score}/{len(word_list)}問正解！")
 
-h=st.number_input('身長を入力してください(m)',value=1.70)
-w=st.number_input('体重を入力してください(kg)',value=70)
-
-bmi=w/(h**2)
-
-dbmi=round(bmi,2)
-
-st.header('あなたのBMIは'+str(dbmi)+'です')
+if __name__ == "__main__":
+    quiz()
