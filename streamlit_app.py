@@ -16,14 +16,14 @@ if difficulty == '１':
         
     else:
         question_1_answer = st.write('不正解　解答：important')
-        if st.write(question_1_answer):
-            question_2 = st.write ('問題２　「」')
-            if question_2 == (''):
-                st.write('入力してください')
-            elif question_2 == 'however':
-                st.write('正解')
-            else:
-                st.write('不正解　解答：however')
+        
+    question_2 = st.write ('問題２　「」')
+    if question_2 == (''):
+        st.write('入力してください')
+    elif question_2 == 'however':
+        st.write('正解')
+    else:
+        st.write('不正解　解答：however')
 elif difficulty == '２':
     st.write('難易度：高校２～３年生')
 else:
