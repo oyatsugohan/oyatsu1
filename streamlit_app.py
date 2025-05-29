@@ -61,7 +61,11 @@ if st.button("答える"):
 if st.button("次の問題へ"):
     st.session_state.word = random.choice(word_list)
     st.session_state.last_result = None
-    st.experimental_rerun()
+    if st.button("次の問題へ"):
+    st.session_state.word = random.choice(word_list)
+    st.session_state.last_result = None
+    user_input = ""  # 入力をリセット（必要なら）
+
 
 # -----------------------
 # スコア表示
