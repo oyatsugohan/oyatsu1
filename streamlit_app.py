@@ -17,7 +17,7 @@ if difficulty == '１':
     else:
         question_1_answer = st.write('不正解　解答：important')
         
-    question_2 = st.write ('問題２　「」')
+    question_2 = st.write ('問題２　「しかし、けれども」')
     if question_2 == (''):
         st.write('入力してください')
     elif question_2 == 'however':
