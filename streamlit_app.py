@@ -1,7 +1,4 @@
-import streamlit as st
-import random
-from word_data import word_dict
-
+# word_data.py
 word_dict = {
     "apple": "りんご",
     "book": "本",
@@ -15,6 +12,10 @@ word_dict = {
     "jacket": "上着"
 }
 
+import streamlit as st
+import random
+from word_data import word_dict
+
 st.set_page_config(page_title="英単語学習アプリ", page_icon="📘")
 
 st.title("📘 英単語学習アプリ")
@@ -24,7 +25,6 @@ if "score" not in st.session_state:
     st.session_state.score = 0
     st.session_state.total = 0
     st.session_state.current_word = None
-
 
 # 新しい単語をランダムに選択
 def get_new_question():
