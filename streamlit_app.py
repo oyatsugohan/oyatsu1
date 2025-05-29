@@ -1,4 +1,4 @@
 import streamlit as st
 
-st.title('タイトル入力')
+st.title('英単語学習アプリ')
 
