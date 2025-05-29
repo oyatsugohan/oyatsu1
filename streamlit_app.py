@@ -11,6 +11,19 @@ if "score" not in st.session_state:
     st.session_state.score = 0
     st.session_state.total = 0
     st.session_state.current_word = None
+# word_data.py
+word_dict = {
+    "apple": "りんご",
+    "book": "本",
+    "car": "車",
+    "dog": "犬",
+    "elephant": "象",
+    "flower": "花",
+    "guitar": "ギター",
+    "house": "家",
+    "island": "島",
+    "jacket": "上着"
+}
 
 # 新しい単語をランダムに選択
 def get_new_question():
