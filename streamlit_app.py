@@ -17,3 +17,5 @@ def main():
             st.write('名称未定(漢検二級)')
             st.write('名称未定(漢検準一級)')
             
+        expected Exception as e:
+            st.error(f'なんかちがーう:{e}')
