@@ -16,4 +16,4 @@ def main():
             st.write('名称未定(漢検準二級)')
             st.write('名称未定(漢検二級)')
             st.write('名称未定(漢検準一級)')
-            if destination==('始まりの森'):
+            
