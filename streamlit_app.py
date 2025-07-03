@@ -61,4 +61,4 @@ user_answer = st.text_input("答えを入力してください:")
 # 解答の確認
 if st.button("回答する"):
     if user_answer == str(answer): # str() で型を合わせる
-        st.
+        st.write('正解！')
