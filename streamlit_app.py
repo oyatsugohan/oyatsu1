@@ -24,7 +24,7 @@ excel_path = "漢字リスト.xlsx"  # 例: 同じディレクトリにある場
 @st.cache_data  # データをキャッシュして、再読み込みを避ける
 def load_questions(excel_path):
     try:
-        df = pd.read_excel(excel_path, engine="openpyxl")  # openpyxl エンジンを指定
+        df = pd.read_excel(excel_path)  # openpyxl エンジンを指定
         # '問題文' と '正解' という列名があることを前提
         questions = df['問題文'].tolist()
         answers = df['正解'].tolist()
@@ -40,8 +40,6 @@ def load_questions(excel_path):
         return []
 
 
-# アプリケーションのタイトル
-st.title("漢字クイズ")
 
 # 問題と解答の読み込み
 question_data = load_questions(excel_path)
