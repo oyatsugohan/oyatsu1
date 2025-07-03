@@ -3,7 +3,7 @@ import pandas as pd
 import random
 
 
-st.title('未定：')
+st.title('クイズを解いて敵を倒す系のやつ、レベルアップの機能を付けたい')
 
 excel_path = "漢字リスト.xlsx"
 df = pd.read_excel(excel_path, engine="openpyxl")
