@@ -12,9 +12,9 @@ else:
     st.write('名前を入力してください')
 
 st.write('向かう向かう場所を選んでください')
-st.button('アｋササイヅエｆｂｄｓｇｓｆ')
+st.button('始まりの森(漢検３級)')
 
-if st.columns == col_a:
+if 
     st.write('あ')
 excel_path = "漢字リスト.xlsx"  # 例: 同じディレクトリにある場合
 #excel_path = "data/漢字リスト.xlsx"  # 例: dataフォルダ内にある場合
