@@ -13,8 +13,6 @@ col_a,col_b,col_c = st.columns(3)
 
 excel_path = "漢字リスト.xlsx"  # 例: 同じディレクトリにある場合
 #excel_path = "data/漢字リスト.xlsx"  # 例: dataフォルダ内にある場合
-df = pd.read_excel(excel_path) 
-st.write(df)
 
 
 # Excelファイルから問題と正解を読み込む関数
