@@ -1,13 +1,17 @@
 import streamlit as st
-import pandas as pd
+import time
 import random
+from datetime import datetime
+import pandas as pd
 
 
 st.title('クイズを解いて敵を倒す系のやつ、レベルアップの機能を付けたい')
 
-player_name='player'
 player_name=st.text_input('あなたの名前を決定してください')
-st.write('あなたの名前は'+player_name+'です！')
+if player_name:
+    st.write('あなたの名前は'+player_name+'です！')
+else:
+    st.write('名前を入力してください')
 
 col_a,col_b,col_c = st.columns(3)
 
@@ -55,3 +59,5 @@ user_answer = st.text_input("答えを入力してください:")
 if st.button("回答する"):
     if user_answer == str(answer): # str() で型を合わせる
         st.write('正解！')
+    else:
+        st.write('不正解…　　　正解は'+str(answer))
