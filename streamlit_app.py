@@ -11,7 +11,8 @@ if player_name:
 else:
     st.write('名前を入力してください')
 
-col_a,col_b,col_c = st.columns(3)
+st.write('向かう向かう場所を選んでください')
+st.button('アｋササイヅエｆｂｄｓｇｓｆ')
 
 if st.columns == col_a:
     st.write('あ')
