@@ -9,12 +9,12 @@ player_name='player'
 player_name=st.text_input('あなたの名前を決定してください')
 st.write('あなたの名前は'+player_name+'です！')
 
-if st.write('あなたの名前は'+player_name+'です！'):
-    destination=st.text_input('向かう場所を設定してください(始まりの森(漢検三級)なら「始まりの森」)')
-    st.write('始まりの森(漢検三級)')
-    st.write('名称未定(漢検準二級)')
-    st.write('名称未定(漢検二級)')
-    st.write('名称未定(漢検準一級)')
+
+destination=st.text_input('向かう場所を設定してください(始まりの森(漢検三級)なら「始まりの森」)')
+st.write('始まりの森(漢検三級)')
+st.write('名称未定(漢検準二級)')
+st.write('名称未定(漢検二級)')
+st.write('名称未定(漢検準一級)')
 
 enemy_1=('コボルト','ゴブリン','スライム')
 excel_path = "漢字リスト.xlsx"  # 例: 同じディレクトリにある場合
@@ -27,7 +27,7 @@ def load_questions(excel_path):
         df = pd.read_excel(excel_path)  # openpyxl エンジンを指定
         # '問題文' と '正解' という列名があることを前提
         questions = df['問題文'].tolist()
-        answers = df['正解].tolist()
+        answers = df['正解'].tolist()
         return list(zip(questions, answers)) # 問題と解答をペアにしたリストを返す
     except FileNotFoundError:
         st.error(f"エラー: ファイル '{excel_path}' が見つかりません。")
