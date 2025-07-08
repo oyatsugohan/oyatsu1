@@ -19,12 +19,15 @@ st.write('名称未定(漢検準一級)')
 enemy_1=('コボルト','ゴブリン','スライム')
 excel_path = "漢字リスト.xlsx"  # 例: 同じディレクトリにある場合
 #excel_path = "data/漢字リスト.xlsx"  # 例: dataフォルダ内にある場合
+df = pd.read_excel(excel_path) 
+st.write(df)
+
 
 # Excelファイルから問題と正解を読み込む関数
 @st.cache_data  # データをキャッシュして、再読み込みを避ける
 def load_questions(excel_path):
     try:
-        df = pd.read_excel(excel_path)  # openpyxl エンジンを指定
+        df = pd.read_excel(excel_path)  
         # '問題文' と '正解' という列名があることを前提
         questions = df['問題文'].tolist()
         answers = df['正解'].tolist()
