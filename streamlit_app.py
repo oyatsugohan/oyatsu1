@@ -26,8 +26,8 @@ def load_questions(excel_path):
     try:
         df = pd.read_excel(excel_path)  # openpyxl エンジンを指定
         # '問題文' と '正解' という列名があることを前提
-        questions = df['B'].tolist()
-        answers = df['C'].tolist()
+        questions = df['問題文'].tolist()
+        answers = df['正解].tolist()
         return list(zip(questions, answers)) # 問題と解答をペアにしたリストを返す
     except FileNotFoundError:
         st.error(f"エラー: ファイル '{excel_path}' が見つかりません。")
