@@ -13,7 +13,7 @@ else:
 
 col_a,col_b,col_c = st.columns(3)
 
-if st.columns = col_a:
+if st.columns == col_a:
     st.write('あ')
 excel_path = "漢字リスト.xlsx"  # 例: 同じディレクトリにある場合
 #excel_path = "data/漢字リスト.xlsx"  # 例: dataフォルダ内にある場合
