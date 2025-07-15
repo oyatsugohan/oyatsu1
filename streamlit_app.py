@@ -31,42 +31,35 @@ with col_4:
         st.session_state.action = 'question_4'
 
 
-if st.session_state.action == 'question_1':
-        if file_method == "プロジェクトフォルダ内のファイル":
-        # 現在のディレクトリ内のExcelファイルのみを検索（サブフォルダは除外）
-        excel_files = glob.glob("*.xlsx") + glob.glob("*.xls")
-        
-        if excel_files:
-            selected_file = ("漢字リスト.elsx", excel_files)
-            
-            if selected_file:
-                try:
-                    # プロジェクトフォルダ内のExcelファイルを読み込み
-                    df = pd.read_excel(selected_file)
-                    st.success(f"ファイル '{selected_file}' を読み込みました")
-                except Exception as e:
-                    st.error(f"ファイル読み込みエラー: {str(e)}")
-                    return
+if st.session_state.action == 'question_1':        
+        if '漢字リスト':
+            try:
+                # プロジェクトフォルダ内のExcelファイルを読み込み
+                df = pd.read_excel('漢字リスト')
+                st.success(f"ファイル '{'漢字リスト'}' を読み込みました")
+            except Exception as e:
+                st.error(f"ファイル読み込みエラー: {str(e)}")
         else:
             st.warning("プロジェクトフォルダ内にExcelファイル(.xlsx, .xls)が見つかりません")
             st.info("Excelファイルを以下の場所に配置してください：")
             
             # ファイル配置のヒント
+
             st.info("💡 ファイル配置のヒント：")
             st.write("- Streamlitアプリ(.py)と同じフォルダに配置")
             st.write("- 対応形式: .xlsx, .xls")
             st.write("- サブフォルダ内のファイルは検索されません")
     
-    else:  # ファイルアップロード
-        uploaded_file = st.file_uploader("Excelファイルを選択してください", type=['xlsx', 'xls'])
-        
-        if uploaded_file is not None:
-            try:
-                # Excelファイルを読み込み
-                df = pd.read_excel(uploaded_file)
-            except Exception as e:
+else:  # ファイルアップロード
+    uploaded_file = st.file_uploader("Excelファイルを選択してください", type=['xlsx', 'xls'])
+    
+    if uploaded_file is not None:
+        try:
+            # Excelファイルを読み込み
+            df = pd.read_excel(uploaded_file)
+        except Exception as e:
                 st.error(f"ファイル読み込みエラー: {str(e)}")
-                return
+
     
     if df is not None:
             
@@ -75,7 +68,6 @@ if st.session_state.action == 'question_1':
                 df.columns = ['難易度', '漢字', '読み'] + list(df.columns[3:])
             else:
                 st.error("Excelファイルには最低3列（難易度、漢字、読み）が必要です")
-                return
             
             st.subheader("データプレビュー")
             st.dataframe(df.head())
