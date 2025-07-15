@@ -31,12 +31,46 @@ with col_4:
         st.session_state.action = 'question_4'
 
 
-if st.session_state.action == 'question_1':        
+if st.session_state.action == 'question_1':  
         if '漢字リスト':
             try:
                 # プロジェクトフォルダ内のExcelファイルを読み込み
                 df = pd.read_excel('漢字リスト')
                 st.success(f"ファイル '{'漢字リスト'}' を読み込みました")
+                if df is not None:
+            
+            # 列名を標準化（列の位置で判断）
+            if len(df.columns) >= 3:
+                df.columns = ['難易度', '漢字', '読み'] + list(df.columns[3:])
+            else:
+                st.error("Excelファイルには最低3列（難易度、漢字、読み）が必要です")
+            
+            st.subheader("データプレビュー")
+            st.dataframe(df.head())
+            
+            # 漢検三級のデータをフィルタリング
+            kanken_3_df = df[df['難易度'] == '漢検三級']
+            
+            st.subheader("漢検三級のデータ")
+            st.write(f"漢検三級の問題数: {len(kanken_3_df)}問")
+            
+            if not kanken_3_df.empty:
+                st.dataframe(kanken_3_df)
+                
+    question, answer = random.choice(question_data)
+    st.write(f"問題: {question}")
+# 問題の表示
+    st.write(f"問題: {question}")
+
+# ユーザーの解答入力
+    user_answer = st.text_input("答えを入力してください:")
+
+# 解答の確認
+    if st.button("回答する"):
+        if user_answer == str(answer): # str() で型を合わせる
+            st.write('正解！')
+        else:
+            st.write('不正解…　　　正解は'+str(answer))
             except Exception as e:
                 st.error(f"ファイル読み込みエラー: {str(e)}")
         else:
