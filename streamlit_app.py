@@ -59,7 +59,6 @@ if player_name != (''):
     st.write('今日は何しようか？')
     if st.button('漢検三級'):
         st.write('OK！　任せてよ！')
-        def main():
     
     # データ読み込み
     df = load_kanji_data()
