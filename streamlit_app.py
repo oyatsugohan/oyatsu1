@@ -49,9 +49,10 @@ def get_random_kanji_3rd_grade(df):
     return random_row.iloc[0]
 
 def main():
-    st.title("🇯🇵 漢検三級 漢字ランダム表示")
-    st.write("漢検三級の漢字をランダムに表示します")
-    
+    st.title("漢検練習帳")
+    st.write("???「やあ！」")
+    st.write('???「僕はoyatsu!　君をサポートするためにきたよ！」')
+    player_name=st.text_input('oyatsu「君の名前を教えてほしいな」')
     # データ読み込み
     df = load_kanji_data()
     
