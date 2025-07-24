@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import random
 import os
+import time
 
 def load_kanji_data():
     """漢字リスト.xlsxを読み込む"""
@@ -51,6 +52,7 @@ def get_random_kanji_3rd_grade(df):
 def main():
     st.title("漢検練習帳")
     st.write("???「やあ！」")
+    time.sleep('0.5')
     st.write('???「僕はoyatsu!　君をサポートするためにきたよ！」')
     player_name=st.text_input('oyatsu「君の名前を教えてほしいな」')
     # データ読み込み
