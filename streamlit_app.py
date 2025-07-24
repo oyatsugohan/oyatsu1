@@ -58,7 +58,7 @@ def main():
     player_name=st.text_input('oyatsu「君の名前を教えてほしいな」')
     if player_name != (''):
         st.write(player_name+'っていうのかぁ')
-        time_sleep(1.3)
+        time.sleep(1.3)
         st.write('これからよろしくね！'+player_name+'！')
     # データ読み込み
     df = load_kanji_data()
