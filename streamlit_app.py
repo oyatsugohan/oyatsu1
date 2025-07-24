@@ -56,6 +56,9 @@ player_name=st.text_input('oyatsu「君の名前を教えてほしいな」')
 if player_name != (''):
     st.write(player_name+'っていうのかぁ')
     st.write('これからよろしくね！'+player_name+'！')
+    st.write('今日は何しようか？')
+    if st.button('漢検三級'):
+        st.write('OK！　任せてよ！')
 
 def main():
     
