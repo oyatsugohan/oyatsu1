@@ -132,15 +132,29 @@ if player_name != '':
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # 回答欄
-                answer_1 = st.text_input('oyatsu「この漢字なんだ？(送り仮名があるときは送り仮名も含めてひらがなで答えてね)」', key=f'answer_{st.session_state.question_count}')
+                # 回答欄とギブアップボタンを横並びに配置
+                col_input, col_giveup = st.columns([3, 1])
+                
+                with col_input:
+                    answer_1 = st.text_input('oyatsu「この漢字なんだ？(送り仮名があるときは送り仮名も含めてひらがなで答えてね)」', key=f'answer_{st.session_state.question_count}')
+                
+                with col_giveup:
+                    st.write("")  # 空行で位置調整
+                    if st.button("😵 ギブアップ", key=f'giveup_{st.session_state.question_count}'):
+                        st.session_state.show_answer = True
+                        st.warning('oyatsu「大丈夫！次は頑張ろう！」')
+                        st.rerun()
                 
                 # 正解判定
                 if answer_1 and answer_1 == st.session_state.current_kanji['読み']:
                     st.success('oyatsu「正解！」')
                     st.session_state.show_answer = True
                     
-                    # 詳細情報を表示
+                elif answer_1 and answer_1 != st.session_state.current_kanji['読み']:
+                    st.error('oyatsu「惜しい！もう一度考えてみて！」')
+                
+                # 詳細情報を表示（正解時またはギブアップ時）
+                if st.session_state.show_answer:
                     col1, col2, col3 = st.columns(3)
                     
                     with col1:
@@ -151,9 +165,6 @@ if player_name != '':
                     
                     with col3:
                         st.metric("読み", st.session_state.current_kanji['読み'])
-                
-                elif answer_1 and answer_1 != st.session_state.current_kanji['読み']:
-                    st.error('oyatsu「惜しい！もう一度考えてみて！」')
                 
                 # 次へボタン（正解後のみ表示）
                 if st.session_state.show_answer:
