@@ -2,17 +2,31 @@ import streamlit as st
 import pandas as pd
 import random
 import os
+from pathlib import Path
 
 def load_kanji_data():
     """漢字リスト.xlsxを読み込む"""
     try:
-        # ファイルパスを指定（現在のディレクトリにある場合）
-        file_path = "漢字リスト.xlsx"
+        # 複数のファイルパスを試行
+        possible_paths = [
+            "漢字リスト.xlsx",
+            "./漢字リスト.xlsx",
+            str(Path.home() / "Desktop" / "漢字リスト.xlsx"),
+            str(Path.home() / "Downloads" / "漢字リスト.xlsx")
+        ]
         
-        # ファイルが存在するかチェック
-        if not os.path.exists(file_path):
-            st.error(f"ファイル '{file_path}' が見つかりません。")
-            st.info("ファイルをこのPythonスクリプトと同じフォルダに配置してください。")
+        file_path = None
+        for path in possible_paths:
+            if os.path.exists(path):
+                file_path = path
+                break
+        
+        if file_path is None:
+            st.error("ファイル '漢字リスト.xlsx' が見つかりません。")
+            st.info("以下の場所にファイルを配置してください：")
+            st.info("- このスクリプトと同じフォルダ")
+            st.info("- デスクトップ")
+            st.info("- ダウンロードフォルダ")
             return None
         
         # Excelファイルを読み込み
