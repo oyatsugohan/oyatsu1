@@ -4,124 +4,137 @@ import random
 import os
 from pathlib import Path
 
-def load_kanji_data():
-    """漢字リスト.xlsxを読み込む"""
-    try:
-        # 複数のファイルパスを試行
-        possible_paths = [
-            "漢字リスト.xlsx",
-            "./漢字リスト.xlsx",
-            str(Path.home() / "Desktop" / "漢字リスト.xlsx"),
-            str(Path.home() / "Downloads" / "漢字リスト.xlsx")
-        ]
-        
-        file_path = None
-        for path in possible_paths:
-            if os.path.exists(path):
-                file_path = path
-                break
-        
-        if file_path is None:
-            st.error("ファイル '漢字リスト.xlsx' が見つかりません。")
-            st.info("以下の場所にファイルを配置してください：")
-            st.info("- このスクリプトと同じフォルダ")
-            st.info("- デスクトップ")
-            st.info("- ダウンロードフォルダ")
-            return None
-        
-        # Excelファイルを読み込み
-        df = pd.read_excel(file_path)
-        
-        # 列名を確認・設定
-        expected_columns = ['難易度', '漢字', '読み']
-        if len(df.columns) >= 3:
-            df.columns = expected_columns[:len(df.columns)]
-        else:
-            st.error("Excelファイルの列数が不足しています。")
-            return None
-            
-        return df
-        
-    except Exception as e:
-        st.error(f"ファイル読み込みエラー: {str(e)}")
-        return None
+@st.cache_data
+def find_and_load_excel():
+    """漢字リスト.xlsxを探して読み込む"""
+    possible_paths = [
+        "漢字リスト.xlsx",
+        str(Path.home() / "Desktop" / "漢字リスト.xlsx"),
+        str(Path.home() / "Downloads" / "漢字リスト.xlsx")
+    ]
+    
+    for path in possible_paths:
+        if os.path.exists(path):
+            try:
+                df = pd.read_excel(path)
+                df.columns = ['難易度', '漢字', '読み']
+                return df, path
+            except Exception as e:
+                st.error(f"ファイル読み込みエラー: {e}")
+                return None, None
+    
+    return None, None
 
-def get_random_kanji_3rd_grade(df):
-    """漢検三級の漢字からランダムに一つ選択"""
+def get_random_kanji():
+    """漢検三級の漢字をランダム選択"""
+    df, file_path = find_and_load_excel()
+    
     if df is None:
-        return None
+        return None, None, None
     
-    # 漢検三級の行をフィルタリング
-    grade_3_df = df[df['難易度'] == '漢検三級']
+    # 漢検三級をフィルタリング
+    grade_3 = df[df['難易度'] == '漢検三級']
     
-    if grade_3_df.empty:
-        st.warning("漢検三級のデータが見つかりません。")
-        return None
+    if grade_3.empty:
+        return None, None, None
     
-    # ランダムに一つ選択
-    random_row = grade_3_df.sample(n=1)
-    return random_row.iloc[0]
+    # ランダム選択
+    selected = grade_3.sample(n=1).iloc[0]
+    return selected['漢字'], selected['読み'], len(grade_3)
 
-def main():
-    st.title("🇯🇵 漢検三級 漢字ランダム表示")
-    st.write("漢検三級の漢字をランダムに表示します")
+# メイン画面
+st.title("🇯🇵 漢字ランダム選択")
+st.write("漢検三級の漢字をランダムに表示します")
+
+# ファイル確認
+df, file_path = find_and_load_excel()
+
+if df is not None:
+    st.success(f"✅ ファイル読み込み成功: {file_path}")
     
-    # データ読み込み
-    df = load_kanji_data()
+    # データ概要
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("総データ数", len(df))
+    with col2:
+        grade_3_count = len(df[df['難易度'] == '漢検三級'])
+        st.metric("漢検三級", f"{grade_3_count}件")
     
-    if df is not None:
-        # データの概要を表示
-        st.sidebar.header("データ概要")
-        st.sidebar.write(f"総データ数: {len(df)}行")
+    st.divider()
+    
+    # ランダム選択ボタン
+    if st.button("🎲 ランダムに漢字を選ぶ", type="primary", use_container_width=True):
+        kanji, reading, total = get_random_kanji()
         
-        # 難易度別の件数を表示
-        difficulty_counts = df['難易度'].value_counts()
-        st.sidebar.write("難易度別件数:")
-        for difficulty, count in difficulty_counts.items():
-            st.sidebar.write(f"- {difficulty}: {count}件")
-        
-        # メインコンテンツ
-        col1, col2 = st.columns([2, 1])
-        
-        with col2:
-            if st.button("🎲 ランダム表示", type="primary"):
-                st.session_state.show_kanji = True
-        
-        with col1:
-            if st.button("🔄 リセット"):
-                st.session_state.show_kanji = False
-                st.rerun()
-        
-        # 漢字表示エリア
-        if hasattr(st.session_state, 'show_kanji') and st.session_state.show_kanji:
-            random_kanji_data = get_random_kanji_3rd_grade(df)
+        if kanji:
+            # 大きく漢字を表示
+            st.markdown(f"""
+            <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; margin: 20px 0;">
+                <h1 style="font-size: 150px; margin: 0; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                    {kanji}
+                </h1>
+            </div>
+            """, unsafe_allow_html=True)
             
-            if random_kanji_data is not None:
-                st.markdown("---")
+            # 詳細情報
+            col1, col2 = st.columns(2)
+            with col1:
+                st.info(f"**漢字**: {kanji}")
+            with col2:
+                st.info(f"**読み**: {reading}")
+        else:
+            st.error("漢検三級のデータが見つかりません")
+
+else:
+    st.error("❌ 漢字リスト.xlsxが見つかりません")
+    st.info("""
+    以下の場所にファイルを配置してください：
+    - このスクリプトと同じフォルダ
+    - デスクトップ
+    - ダウンロードフォルダ
+    """)
+    
+    # ファイルアップロード機能
+    st.divider()
+    st.subheader("📁 ファイルアップロード")
+    uploaded_file = st.file_uploader("漢字リスト.xlsxをアップロード", type=['xlsx'])
+    
+    if uploaded_file:
+        try:
+            df = pd.read_excel(uploaded_file)
+            df.columns = ['難易度', '漢字', '読み']
+            
+            st.success("✅ ファイルアップロード成功！")
+            
+            # アップロードファイルでの処理
+            grade_3 = df[df['難易度'] == '漢検三級']
+            
+            if not grade_3.empty and st.button("🎲 アップロードファイルから選ぶ", type="primary"):
+                selected = grade_3.sample(n=1).iloc[0]
                 
-                # 大きく漢字を表示
                 st.markdown(f"""
-                <div style="text-align: center; padding: 40px;">
-                    <h1 style="font-size: 120px; margin: 0; color: #1f77b4;">
-                        {random_kanji_data['漢字']}
+                <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; margin: 20px 0;">
+                    <h1 style="font-size: 150px; margin: 0; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                        {selected['漢字']}
                     </h1>
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # 詳細情報を表示
-                col1, col2, col3 = st.columns(3)
-                
+                col1, col2 = st.columns(2)
                 with col1:
-                    st.metric("難易度", random_kanji_data['難易度'])
-                
+                    st.info(f"**漢字**: {selected['漢字']}")
                 with col2:
-                    st.metric("漢字", random_kanji_data['漢字'])
-                
-                with col3:
-                    st.metric("読み", random_kanji_data['読み'])
-    
-    else:
-        st.info("📁 「漢字リスト.xlsx」ファイルを準備してからアプリを実行してください。")
+                    st.info(f"**読み**: {selected['読み']}")
+        
+        except Exception as e:
+            st.error(f"アップロードエラー: {e}")
 
-if __name__ == "__main__":
-    main()
+# サイドバー情報
+with st.sidebar:
+    st.header("ℹ️ 使い方")
+    st.write("1. 漢字リスト.xlsxを準備")
+    st.write("2. ボタンをクリック")
+    st.write("3. ランダムに表示される漢字を確認")
+    
+    st.divider()
+    st.caption("Made with Streamlit")
