@@ -128,7 +128,7 @@ if player_name != '':
                     </div>
                     """, unsafe_allow_html=True)
                     answer_1=st.text_input('oyatsu「この漢字なんだ？(送り仮名があるときは送り仮名も含めてひらがなで答えてね)」')
-                    if answer_1 == random_kanji_data['読み']
+                    if answer_1 == random_kanji_data['読み']:
                         st.write('oyatsu「正解！」')
                         # 詳細情報を表示
                         col1, col2, col3 = st.columns(3)
