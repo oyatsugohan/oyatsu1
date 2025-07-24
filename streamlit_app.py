@@ -49,17 +49,16 @@ def get_random_kanji_3rd_grade(df):
     random_row = grade_3_df.sample(n=1)
     return random_row.iloc[0]
 
+st.title("漢検練習帳")
+st.write("???「やあ！」")
+st.write('???「僕はoyatsu!　君をサポートするためにきたよ！」')
+player_name=st.text_input('oyatsu「君の名前を教えてほしいな」')
+if player_name != (''):
+    st.write(player_name+'っていうのかぁ')
+    st.write('これからよろしくね！'+player_name+'！')
+
 def main():
-    st.title("漢検練習帳")
-    st.write("???「やあ！」")
-    time.sleep(1.3)
-    st.write('???「僕はoyatsu!　君をサポートするためにきたよ！」')
-    time.sleep(1.3)
-    player_name=st.text_input('oyatsu「君の名前を教えてほしいな」')
-    if player_name != (''):
-        st.write(player_name+'っていうのかぁ')
-        time.sleep(1.3)
-        st.write('これからよろしくね！'+player_name+'！')
+    
     # データ読み込み
     df = load_kanji_data()
     
