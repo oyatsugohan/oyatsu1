@@ -57,6 +57,8 @@ if player_name != (''):
     st.write(player_name+'っていうのかぁ')
     st.write('これからよろしくね！'+player_name+'！')
     st.write('今日は何しようか？')
+    st.button('漢検三級')
+    st.button('漢検二級')
     if st.button('漢検三級'):
         st.write('OK！　任せてよ！')
     
