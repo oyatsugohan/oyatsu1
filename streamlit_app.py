@@ -143,3 +143,4 @@ if player_name != '':
     # 漢検二級が選択された場合の処理
     elif st.session_state.selected_level == '二級':
         st.write('ごめん！それは今製作中なんだ。乞うご期待（笑）！')
+        あ
