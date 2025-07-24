@@ -57,67 +57,65 @@ if player_name != (''):
     st.write(player_name+'っていうのかぁ')
     st.write('これからよろしくね！'+player_name+'！')
     st.write('今日は何しようか？')
-    st.button('漢検三級')
-    st.button('漢検二級')
     if st.button('漢検三級'):
         st.write('OK！　任せてよ！')
     
     # データ読み込み
-    df = load_kanji_data()
+        df = load_kanji_data()
     
-    if df is not None:
-        # データの概要を表示
-        st.sidebar.header("データ概要")
-        st.sidebar.write(f"総データ数: {len(df)}行")
+        if df is not None:
+            # データの概要を表示
+            st.sidebar.header("データ概要")
+            st.sidebar.write(f"総データ数: {len(df)}行")
         
-        # 難易度別の件数を表示
-        difficulty_counts = df['難易度'].value_counts()
-        st.sidebar.write("難易度別件数:")
-        for difficulty, count in difficulty_counts.items():
-            st.sidebar.write(f"- {difficulty}: {count}件")
+            # 難易度別の件数を表示
+            difficulty_counts = df['難易度'].value_counts()
+            st.sidebar.write("難易度別件数:")
+            for difficulty, count in difficulty_counts.items():
+                st.sidebar.write(f"- {difficulty}: {count}件")
         
-        # メインコンテンツ
-        col1, col2 = st.columns([2, 1])
+            # メインコンテンツ
+            col1, col2 = st.columns([2, 1])
         
-        with col2:
-            if st.button("🎲 ランダム表示", type="primary"):
-                st.session_state.show_kanji = True
+            with col2:
+                if st.button("🎲 ランダム表示", type="primary"):
+                    st.session_state.show_kanji = True
         
-        with col1:
-            if st.button("🔄 リセット"):
-                st.session_state.show_kanji = False
-                st.rerun()
+            with col1:
+                if st.button("🔄 リセット"):
+                    st.session_state.show_kanji = False
+                    st.rerun()
         
-        # 漢字表示エリア
-        if hasattr(st.session_state, 'show_kanji') and st.session_state.show_kanji:
-            random_kanji_data = get_random_kanji_3rd_grade(df)
+            # 漢字表示エリア
+            if hasattr(st.session_state, 'show_kanji') and st.session_state.show_kanji:
+                random_kanji_data = get_random_kanji_3rd_grade(df)
             
-            if random_kanji_data is not None:
-                st.markdown("---")
+                if random_kanji_data is not None:
+                    st.markdown("---")
                 
-                # 大きく漢字を表示
-                st.markdown(f"""
-                <div style="text-align: center; padding: 40px;">
-                    <h1 style="font-size: 120px; margin: 0; color: #1f77b4;">
-                        {random_kanji_data['漢字']}
-                    </h1>
-                </div>
-                """, unsafe_allow_html=True)
+                    # 大きく漢字を表示
+                    st.markdown(f"""
+                    <div style="text-align: center; padding: 40px;">
+                        <h1 style="font-size: 120px; margin: 0; color: #1f77b4;">
+                            {random_kanji_data['漢字']}
+                        </h1>
+                    </div>
+                    """, unsafe_allow_html=True)
                 
-                # 詳細情報を表示
-                col1, col2, col3 = st.columns(3)
+                    # 詳細情報を表示
+                    col1, col2, col3 = st.columns(3)
                 
-                with col1:
-                    st.metric("難易度", random_kanji_data['難易度'])
+                    with col1:
+                        st.metric("難易度", random_kanji_data['難易度'])
                 
-                with col2:
-                    st.metric("漢字", random_kanji_data['漢字'])
+                    with col2:
+                        st.metric("漢字", random_kanji_data['漢字'])
                 
-                with col3:
-                    st.metric("読み", random_kanji_data['読み'])
-    
+                    with col3:
+                        st.metric("読み", random_kanji_data['読み'])
+
+    elif st.button('漢検二級'):
+        st.write('ごめん！それは今製作中なんだ。乞うご期待（笑）！')
+
     else:
         st.info("📁ごめ～ん！ 問題が見つからなかったんだ。再起動してみてほしいな")
-
-if st.button('漢検二級'):
-    st.write('ごめん！今準備中なんだ')
