@@ -127,19 +127,20 @@ if player_name != '':
                         </h1>
                     </div>
                     """, unsafe_allow_html=True)
-                    st.write('oyatsu「この漢字なんだ？(送り仮名があるときは送り仮名も含めてひらがなで答えてね)」')
+                    answer_1=st.text_input('oyatsu「この漢字なんだ？(送り仮名があるときは送り仮名も含めてひらがなで答えてね)」')
+                    if answer_1 = random_kanji_data['読み']
+                        st.write('oyatsu「正解！」')
+                        # 詳細情報を表示
+                        col1, col2, col3 = st.columns(3)
                     
-                    # 詳細情報を表示
-                    col1, col2, col3 = st.columns(3)
+                        with col1:
+                            st.metric("難易度", random_kanji_data['難易度'])
                     
-                    with col1:
-                        st.metric("難易度", random_kanji_data['難易度'])
+                        with col2:
+                            st.metric("漢字", random_kanji_data['漢字'])
                     
-                    with col2:
-                        st.metric("漢字", random_kanji_data['漢字'])
-                    
-                    with col3:
-                        st.metric("読み", random_kanji_data['読み'])
+                        with col3:
+                            st.metric("読み", random_kanji_data['読み'])
     
     # 漢検二級が選択された場合の処理
     elif st.session_state.selected_level == '二級':
