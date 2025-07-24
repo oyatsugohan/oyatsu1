@@ -60,9 +60,9 @@ st.write('???「僕はoyatsu!　君をサポートするためにきたよ！」
 player_name = st.text_input('oyatsu「君の名前を教えてほしいな」')
 
 if player_name != '':
-    st.write(player_name + 'っていうのかぁ')
-    st.write('これからよろしくね！' + player_name + '！')
-    st.write('今日は何しようか？')
+    st.write('oyatsu「'+player_name + 'っていうのかぁ')
+    st.write('oyatsu「これからよろしくね！' + player_name + '」！')
+    st.write('oyatsu「今日は何しようか？」')
     
     # セッション状態の初期化（修正点）
     if 'selected_level' not in st.session_state:
@@ -84,7 +84,7 @@ if player_name != '':
     
     # 漢検三級が選択された場合の処理
     if st.session_state.selected_level == '三級':
-        st.write('OK！　任せてよ！')
+        st.write('oyatsu「OK！　任せてよ！」')
         
         # データ読み込み
         df = load_kanji_data()
@@ -127,6 +127,7 @@ if player_name != '':
                         </h1>
                     </div>
                     """, unsafe_allow_html=True)
+                    st.write('oyatsu「この漢字なんだ？(送り仮名があるときは送り仮名も含めてひらがなで答えてね)」')
                     
                     # 詳細情報を表示
                     col1, col2, col3 = st.columns(3)
@@ -142,4 +143,4 @@ if player_name != '':
     
     # 漢検二級が選択された場合の処理
     elif st.session_state.selected_level == '二級':
-        st.write('ごめん！それは今製作中なんだ。乞うご期待（笑）！')
+        st.write('oyatsu「ごめん！それは今製作中なんだ。乞うご期待（笑）！」')
