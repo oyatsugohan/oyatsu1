@@ -116,6 +116,3 @@ if player_name != (''):
     
     else:
         st.info("📁ごめ～ん！ 問題が見つからなかったんだ。再起動してみてほしいな")
-
-if __name__ == "__main__":
-    main()
