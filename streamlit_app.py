@@ -1,132 +1,113 @@
 import streamlit as st
-import random
 import pandas as pd
+import random
+import os
 
-
-st.title('クイズを解いて敵を倒す系のやつ、レベルアップの機能を付けたい')
-
-player_name=st.text_input('あなたの名前を決定してください')
-if player_name:
-    st.write('あなたの名前は'+player_name+'です！')
-else:
-    st.write('名前を入力してください')
-
-st.write('向かう向かう場所を選んでください')
-col_1,col_2,col_3,col_4 = st.columns(4)
-
-with col_1:
-    if st.button('始まりの森(漢検三級)'):
-        st.session_state.action = 'question_1'
+def load_kanji_data():
+    """漢字リスト.xlsxを読み込む"""
+    try:
+        # ファイルパスを指定（現在のディレクトリにある場合）
+        file_path = "漢字リスト.xlsx"
         
-with col_2:
-    if st.button('未定(漢検二級)'):
-        st.session_state.action = 'question_2'
-
-with col_3:
-    if st.button('未定(漢検準一級)'):
-        st.session_state.action = 'question_3'
-
-with col_4:
-    if st.button('未定(漢検一級)'):
-        st.session_state.action = 'question_4'
-
-
-if st.session_state.action == 'question_1':  
-        if '漢字リスト':
-            try:
-                # プロジェクトフォルダ内のExcelファイルを読み込み
-                df = pd.read_excel('漢字リスト')
-                st.success(f"ファイル '{'漢字リスト'}' を読み込みました")
-                if df is not None:
-            
-            # 列名を標準化（列の位置で判断）
-            if len(df.columns) >= 3:
-                df.columns = ['難易度', '漢字', '読み'] + list(df.columns[3:])
-            else:
-                st.error("Excelファイルには最低3列（難易度、漢字、読み）が必要です")
-            
-            st.subheader("データプレビュー")
-            st.dataframe(df.head())
-            
-            # 漢検三級のデータをフィルタリング
-            kanken_3_df = df[df['難易度'] == '漢検三級']
-            
-            st.subheader("漢検三級のデータ")
-            st.write(f"漢検三級の問題数: {len(kanken_3_df)}問")
-            
-            if not kanken_3_df.empty:
-                st.dataframe(kanken_3_df)
-                
-    question, answer = random.choice(question_data)
-    st.write(f"問題: {question}")
-# 問題の表示
-    st.write(f"問題: {question}")
-
-# ユーザーの解答入力
-    user_answer = st.text_input("答えを入力してください:")
-
-# 解答の確認
-    if st.button("回答する"):
-        if user_answer == str(answer): # str() で型を合わせる
-            st.write('正解！')
+        # ファイルが存在するかチェック
+        if not os.path.exists(file_path):
+            st.error(f"ファイル '{file_path}' が見つかりません。")
+            st.info("ファイルをこのPythonスクリプトと同じフォルダに配置してください。")
+            return None
+        
+        # Excelファイルを読み込み
+        df = pd.read_excel(file_path)
+        
+        # 列名を確認・設定
+        expected_columns = ['難易度', '漢字', '読み']
+        if len(df.columns) >= 3:
+            df.columns = expected_columns[:len(df.columns)]
         else:
-            st.write('不正解…　　　正解は'+str(answer))
-            except Exception as e:
-                st.error(f"ファイル読み込みエラー: {str(e)}")
-        else:
-            st.warning("プロジェクトフォルダ内にExcelファイル(.xlsx, .xls)が見つかりません")
-            st.info("Excelファイルを以下の場所に配置してください：")
+            st.error("Excelファイルの列数が不足しています。")
+            return None
             
-            # ファイル配置のヒント
+        return df
+        
+    except Exception as e:
+        st.error(f"ファイル読み込みエラー: {str(e)}")
+        return None
 
-            st.info("💡 ファイル配置のヒント：")
-            st.write("- Streamlitアプリ(.py)と同じフォルダに配置")
-            st.write("- 対応形式: .xlsx, .xls")
-            st.write("- サブフォルダ内のファイルは検索されません")
+def get_random_kanji_3rd_grade(df):
+    """漢検三級の漢字からランダムに一つ選択"""
+    if df is None:
+        return None
     
-else:  # ファイルアップロード
-    uploaded_file = st.file_uploader("Excelファイルを選択してください", type=['xlsx', 'xls'])
+    # 漢検三級の行をフィルタリング
+    grade_3_df = df[df['難易度'] == '漢検三級']
     
-    if uploaded_file is not None:
-        try:
-            # Excelファイルを読み込み
-            df = pd.read_excel(uploaded_file)
-        except Exception as e:
-                st.error(f"ファイル読み込みエラー: {str(e)}")
+    if grade_3_df.empty:
+        st.warning("漢検三級のデータが見つかりません。")
+        return None
+    
+    # ランダムに一つ選択
+    random_row = grade_3_df.sample(n=1)
+    return random_row.iloc[0]
 
+def main():
+    st.title("🇯🇵 漢検三級 漢字ランダム表示")
+    st.write("漢検三級の漢字をランダムに表示します")
+    
+    # データ読み込み
+    df = load_kanji_data()
     
     if df is not None:
+        # データの概要を表示
+        st.sidebar.header("データ概要")
+        st.sidebar.write(f"総データ数: {len(df)}行")
+        
+        # 難易度別の件数を表示
+        difficulty_counts = df['難易度'].value_counts()
+        st.sidebar.write("難易度別件数:")
+        for difficulty, count in difficulty_counts.items():
+            st.sidebar.write(f"- {difficulty}: {count}件")
+        
+        # メインコンテンツ
+        col1, col2 = st.columns([2, 1])
+        
+        with col2:
+            if st.button("🎲 ランダム表示", type="primary"):
+                st.session_state.show_kanji = True
+        
+        with col1:
+            if st.button("🔄 リセット"):
+                st.session_state.show_kanji = False
+                st.rerun()
+        
+        # 漢字表示エリア
+        if hasattr(st.session_state, 'show_kanji') and st.session_state.show_kanji:
+            random_kanji_data = get_random_kanji_3rd_grade(df)
             
-            # 列名を標準化（列の位置で判断）
-            if len(df.columns) >= 3:
-                df.columns = ['難易度', '漢字', '読み'] + list(df.columns[3:])
-            else:
-                st.error("Excelファイルには最低3列（難易度、漢字、読み）が必要です")
-            
-            st.subheader("データプレビュー")
-            st.dataframe(df.head())
-            
-            # 漢検三級のデータをフィルタリング
-            kanken_3_df = df[df['難易度'] == '漢検三級']
-            
-            st.subheader("漢検三級のデータ")
-            st.write(f"漢検三級の問題数: {len(kanken_3_df)}問")
-            
-            if not kanken_3_df.empty:
-                st.dataframe(kanken_3_df)
+            if random_kanji_data is not None:
+                st.markdown("---")
                 
-    question, answer = random.choice(question_data)
-    st.write(f"問題: {question}")
-# 問題の表示
-    st.write(f"問題: {question}")
+                # 大きく漢字を表示
+                st.markdown(f"""
+                <div style="text-align: center; padding: 40px;">
+                    <h1 style="font-size: 120px; margin: 0; color: #1f77b4;">
+                        {random_kanji_data['漢字']}
+                    </h1>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # 詳細情報を表示
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.metric("難易度", random_kanji_data['難易度'])
+                
+                with col2:
+                    st.metric("漢字", random_kanji_data['漢字'])
+                
+                with col3:
+                    st.metric("読み", random_kanji_data['読み'])
+    
+    else:
+        st.info("📁 「漢字リスト.xlsx」ファイルを準備してからアプリを実行してください。")
 
-# ユーザーの解答入力
-    user_answer = st.text_input("答えを入力してください:")
-
-# 解答の確認
-    if st.button("回答する"):
-        if user_answer == str(answer): # str() で型を合わせる
-            st.write('正解！')
-        else:
-            st.write('不正解…　　　正解は'+str(answer))
-
+if __name__ == "__main__":
+    main()
