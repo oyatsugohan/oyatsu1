@@ -64,11 +64,17 @@ if player_name != '':
     st.write('oyatsu「これからよろしくね！' + player_name + '」！')
     st.write('oyatsu「今日は何しようか？」')
     
-    # セッション状態の初期化（修正点）
+    # セッション状態の初期化
     if 'selected_level' not in st.session_state:
         st.session_state.selected_level = None
     if 'show_kanji' not in st.session_state:
         st.session_state.show_kanji = False
+    if 'current_kanji' not in st.session_state:
+        st.session_state.current_kanji = None
+    if 'show_answer' not in st.session_state:
+        st.session_state.show_answer = False
+    if 'question_count' not in st.session_state:
+        st.session_state.question_count = 0
     
     # ボタンの配置
     col1, col2 = st.columns(2)
@@ -76,7 +82,10 @@ if player_name != '':
     with col1:
         if st.button('漢検三級', key='level3'):
             st.session_state.selected_level = '三級'
-            st.session_state.show_kanji = False  # リセット
+            st.session_state.show_kanji = False
+            st.session_state.current_kanji = None
+            st.session_state.show_answer = False
+            st.session_state.question_count = 0
     
     with col2:
         if st.button('漢検二級', key='level2'):
@@ -93,6 +102,7 @@ if player_name != '':
             # データの概要を表示
             st.sidebar.header("データ概要")
             st.sidebar.write(f"総データ数: {len(df)}行")
+            st.sidebar.write(f"問題数: {st.session_state.question_count}")
             
             # 難易度別の件数を表示
             difficulty_counts = df['難易度'].value_counts()
@@ -100,47 +110,69 @@ if player_name != '':
             for difficulty, count in difficulty_counts.items():
                 st.sidebar.write(f"- {difficulty}: {count}件")
             
-            # メインコンテンツ
-            col1, col2 = st.columns([2, 1])
-            
-            with col2:
-                if st.button("🎲 ランダム表示", type="primary", key='random_btn'):
+            # 最初の問題を出すボタン、または次の問題へのボタン
+            if not st.session_state.show_kanji:
+                if st.button("🎲 最初の問題", type="primary", key='start_btn'):
+                    st.session_state.current_kanji = get_random_kanji_3rd_grade(df)
                     st.session_state.show_kanji = True
-            
-            with col1:
-                if st.button("🔄 リセット", key='reset_btn'):
-                    st.session_state.show_kanji = False
+                    st.session_state.show_answer = False
+                    st.session_state.question_count += 1
                     st.rerun()
             
             # 漢字表示エリア
-            if st.session_state.show_kanji:
-                random_kanji_data = get_random_kanji_3rd_grade(df)
+            if st.session_state.show_kanji and st.session_state.current_kanji is not None:
+                st.markdown("---")
                 
-                if random_kanji_data is not None:
-                    st.markdown("---")
+                # 大きく漢字を表示
+                st.markdown(f"""
+                <div style="text-align: center; padding: 40px;">
+                    <h1 style="font-size: 120px; margin: 0; color: #1f77b4;">
+                        {st.session_state.current_kanji['漢字']}
+                    </h1>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # 回答欄
+                answer_1 = st.text_input('oyatsu「この漢字なんだ？(送り仮名があるときは送り仮名も含めてひらがなで答えてね)」', key=f'answer_{st.session_state.question_count}')
+                
+                # 正解判定
+                if answer_1 and answer_1 == st.session_state.current_kanji['読み']:
+                    st.success('oyatsu「正解！」')
+                    st.session_state.show_answer = True
                     
-                    # 大きく漢字を表示
-                    st.markdown(f"""
-                    <div style="text-align: center; padding: 40px;">
-                        <h1 style="font-size: 120px; margin: 0; color: #1f77b4;">
-                            {random_kanji_data['漢字']}
-                        </h1>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    answer_1=st.text_input('oyatsu「この漢字なんだ？(送り仮名があるときは送り仮名も含めてひらがなで答えてね)」')
-                    if answer_1 == random_kanji_data['読み']:
-                        st.write('oyatsu「正解！」')
-                        # 詳細情報を表示
-                        col1, col2, col3 = st.columns(3)
+                    # 詳細情報を表示
+                    col1, col2, col3 = st.columns(3)
                     
-                        with col1:
-                            st.metric("難易度", random_kanji_data['難易度'])
+                    with col1:
+                        st.metric("難易度", st.session_state.current_kanji['難易度'])
                     
-                        with col2:
-                            st.metric("漢字", random_kanji_data['漢字'])
+                    with col2:
+                        st.metric("漢字", st.session_state.current_kanji['漢字'])
                     
-                        with col3:
-                            st.metric("読み", random_kanji_data['読み'])
+                    with col3:
+                        st.metric("読み", st.session_state.current_kanji['読み'])
+                
+                elif answer_1 and answer_1 != st.session_state.current_kanji['読み']:
+                    st.error('oyatsu「惜しい！もう一度考えてみて！」')
+                
+                # 次へボタン（正解後のみ表示）
+                if st.session_state.show_answer:
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        if st.button("➡️ 次の問題", type="primary", key='next_btn'):
+                            st.session_state.current_kanji = get_random_kanji_3rd_grade(df)
+                            st.session_state.show_answer = False
+                            st.session_state.question_count += 1
+                            st.rerun()
+                    
+                    with col2:
+                        if st.button("🔄 練習終了", key='end_btn'):
+                            st.session_state.show_kanji = False
+                            st.session_state.current_kanji = None
+                            st.session_state.show_answer = False
+                            st.write('oyatsu「お疲れ様！今日もよく頑張ったね！」')
+                            st.rerun()
     
     # 漢検二級が選択された場合の処理
     elif st.session_state.selected_level == '二級':
