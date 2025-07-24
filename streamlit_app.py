@@ -5,4 +5,4 @@ import random
 st.title("漢検練習帳📖")
 
 st.write('あなたの名前を教えてください')
-player_name=input('your name')
+player_name=st.input('your name')
