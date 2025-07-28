@@ -142,7 +142,7 @@ if player_name != '':
                     st.write("")  # 空行で位置調整
                     if st.button("😵 ギブアップ", key=f'giveup_{st.session_state.question_count}'):
                         st.session_state.show_answer = True
-                        st.warning('oyatsu「大丈夫！次は頑張ろう！」')
+                        st.write('oyatsu「大丈夫！次は頑張ろう！」')
                         st.rerun()
                 
                 # 正解判定
