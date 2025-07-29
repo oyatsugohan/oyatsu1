@@ -52,6 +52,40 @@ def get_random_kanji_3rd_grade(df):
     random_row = grade_3_df.sample(n=1)
     return random_row.iloc[0]
 
+def get_random_kanji_2nd_grade(df):
+    """漢検二級の漢字からランダムに一つ選択"""
+    if df is None:
+        return None
+    
+    # 漢検二級の行をフィルタリング
+    grade_2_df = df[df['難易度'] == '漢検二級']
+    
+    if grade_2_df.empty:
+        st.warning("漢検二級のデータが見つかりません。")
+        # デバッグ情報を追加
+        st.write("利用可能な難易度:")
+        st.write(df['難易度'].unique())
+        return None
+
+def get_random_kanji_1st_grade(df):
+    """漢検一級の漢字からランダムに一つ選択"""
+    if df is None:
+        return None
+    
+    # 漢検一級の行をフィルタリング
+    grade_1_df = df[df['難易度'] == '漢検一級']
+    
+    if grade_1_df.empty:
+        st.warning("漢検一級のデータが見つかりません。")
+        # デバッグ情報を追加
+        st.write("利用可能な難易度:")
+        st.write(df['難易度'].unique())
+        return None
+    
+    # ランダムに一つ選択
+    random_row = grade_1_df.sample(n=1)
+    return random_row.iloc[0]
+
 # メイン画面
 st.title("漢検練習帳")
 st.write("???「やあ！」")
