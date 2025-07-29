@@ -91,8 +91,9 @@ def get_random_kanji_1st_grade(df):
     return random_row.iloc[0]
 
 def calculate_required_exp(level):
-    """レベルに応じて必要経験値を計算"""
-    return 100 + (level - 1) * 30
+    """レベルに応じて必要経験値を計算（1.3倍ずつ増加）"""
+    base_exp = 100
+    return int(base_exp * (1.3 ** (level - 1)))
 
 def display_practice_interface(df, get_kanji_function, level_name):
     """練習インターフェースを表示する共通関数"""
