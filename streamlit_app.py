@@ -90,9 +90,6 @@ def get_random_kanji_1st_grade(df):
     random_row = grade_1_df.sample(n=1)
     return random_row.iloc[0]
 
-player_level = 1
-experience_points = 100
-
 def display_practice_interface(df, get_kanji_function, level_name):
     """練習インターフェースを表示する共通関数"""
     # メッセージ用のセッション状態を初期化
@@ -103,8 +100,9 @@ def display_practice_interface(df, get_kanji_function, level_name):
     st.sidebar.header("データ概要")
     st.sidebar.write(f"総データ数: {len(df)}行")
     st.sidebar.write(f"問題数: {st.session_state.question_count}")
-    st.sidebar.write(f'あなたのレベル: '+str(player_level))
-    st.sidebar.write(f'残り経験値: '+str(experience_points))
+    st.sidebar.write(f'あなたのレベル: {st.session_state.player_level}')
+    st.sidebar.write(f'残り経験値: {st.session_state.experience_points}')
+    
     # 難易度別の件数を表示
     difficulty_counts = df['難易度'].value_counts()
     st.sidebar.write("難易度別件数:")
@@ -154,11 +152,17 @@ def display_practice_interface(df, get_kanji_function, level_name):
         # 正解判定
         if answer_1 and answer_1 == st.session_state.current_kanji['読み']:
             st.success('oyatsu「正解！」')
-            experience_points = experience_points - 10
+            # 経験値を減らす
+            st.session_state.experience_points -= 10
             st.session_state.show_answer = True
-            if experience_points == 0:
-                player_level = player_level + 1
-                experience_points = 100
+            
+            # レベルアップ判定
+            if st.session_state.experience_points <= 0:
+                st.session_state.player_level += 1
+                # 余った分を次のレベルに繰り越し + ボーナス30を追加
+                st.session_state.experience_points = 100 + st.session_state.experience_points - 30
+                st.balloons()  # レベルアップエフェクト
+                st.success(f'🎉 レベルアップ！ レベル{st.session_state.player_level}になりました！')
             
         elif answer_1 and answer_1 != st.session_state.current_kanji['読み']:
             st.error('oyatsu「惜しい！もう一度考えてみて！」')
@@ -219,6 +223,10 @@ if player_name != '':
         st.session_state.show_answer = False
     if 'question_count' not in st.session_state:
         st.session_state.question_count = 0
+    if 'player_level' not in st.session_state:
+        st.session_state.player_level = 1
+    if 'experience_points' not in st.session_state:
+        st.session_state.experience_points = 100
     
     # ボタンの配置
     col1, col2, col3 = st.columns(3)
