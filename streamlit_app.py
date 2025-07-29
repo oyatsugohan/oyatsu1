@@ -154,8 +154,11 @@ def display_practice_interface(df, get_kanji_function, level_name):
         # 正解判定
         if answer_1 and answer_1 == st.session_state.current_kanji['読み']:
             st.success('oyatsu「正解！」')
-
+            experience_points = experience_points - 10
             st.session_state.show_answer = True
+            if experience_points == 0:
+                player_level = player_level + 1
+                experience_points = 100
             
         elif answer_1 and answer_1 != st.session_state.current_kanji['読み']:
             st.error('oyatsu「惜しい！もう一度考えてみて！」')
