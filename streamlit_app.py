@@ -245,13 +245,13 @@ if player_name != '':
     if df is not None:
         # 選択されたレベルに応じて処理
         if st.session_state.selected_level == '三級':
-            st.write('oyatsu「OK！　任せてよ！」')
+            st.write('oyatsu「漢検三級だね。OK　任せてよ！」')
             display_practice_interface(df, get_random_kanji_3rd_grade, '三級')
         
         elif st.session_state.selected_level == '二級':
-            st.write('oyatsu「OK！　任せてよ！」')
+            st.write('oyatsu「漢検二級だね。OK　任せてよ！」')
             display_practice_interface(df, get_random_kanji_2nd_grade, '二級')
         
         elif st.session_state.selected_level == '一級':
-            st.write('oyatsu「OK！　任せてよ！」')
+            st.write('oyatsu「漢検一級だね。OK　任せてよ！」')
             display_practice_interface(df, get_random_kanji_1st_grade, '一級')
