@@ -90,11 +90,17 @@ def get_random_kanji_1st_grade(df):
     random_row = grade_1_df.sample(n=1)
     return random_row.iloc[0]
 
+def calculate_required_exp(level):
+    """レベルに応じて必要経験値を計算"""
+    return 100 + (level - 1) * 30
+
 def display_practice_interface(df, get_kanji_function, level_name):
     """練習インターフェースを表示する共通関数"""
     # メッセージ用のセッション状態を初期化
     if 'message' not in st.session_state:
         st.session_state.message = ""
+    if 'level_up_message' not in st.session_state:
+        st.session_state.level_up_message = ""
     
     # データの概要を表示
     st.sidebar.header("データ概要")
@@ -109,7 +115,17 @@ def display_practice_interface(df, get_kanji_function, level_name):
     for difficulty, count in difficulty_counts.items():
         st.sidebar.write(f"- {difficulty}: {count}件")
     
-    # メッセージを表示
+    # レベルアップメッセージを表示（優先して表示）
+    if st.session_state.level_up_message:
+        st.balloons()  # レベルアップエフェクト
+        st.success(st.session_state.level_up_message)
+        # 「OK」ボタンでメッセージを消す
+        if st.button("🎉 OK", type="primary", key=f'levelup_ok_{level_name}'):
+            st.session_state.level_up_message = ""
+            st.rerun()
+        return  # レベルアップメッセージが表示されている間は他の処理をしない
+    
+    # 通常のメッセージを表示
     if st.session_state.message:
         st.info(st.session_state.message)
     
@@ -158,11 +174,14 @@ def display_practice_interface(df, get_kanji_function, level_name):
             
             # レベルアップ判定
             if st.session_state.experience_points <= 0:
+                old_level = st.session_state.player_level
                 st.session_state.player_level += 1
-                # 余った分を次のレベルに繰り越し + ボーナス30を追加
-                st.session_state.experience_points = 100 + st.session_state.experience_points - 30
-                st.balloons()  # レベルアップエフェクト
-                st.success(f'🎉 レベルアップ！ レベル{st.session_state.player_level}になりました！')
+                # 現在のレベルに必要な経験値を計算
+                required_exp = calculate_required_exp(st.session_state.player_level)
+                # 余った分を次のレベルに繰り越し（ボーナス30を引く）
+                st.session_state.experience_points = required_exp + st.session_state.experience_points - 30
+                # レベルアップメッセージを設定
+                st.session_state.level_up_message = f'🎉 レベルアップ！ レベル{st.session_state.player_level}になりました！'
             
         elif answer_1 and answer_1 != st.session_state.current_kanji['読み']:
             st.error('oyatsu「惜しい！もう一度考えてみて！」')
