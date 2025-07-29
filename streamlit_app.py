@@ -90,6 +90,9 @@ def get_random_kanji_1st_grade(df):
     random_row = grade_1_df.sample(n=1)
     return random_row.iloc[0]
 
+player_level = 1
+experience_points = 100
+
 def display_practice_interface(df, get_kanji_function, level_name):
     """練習インターフェースを表示する共通関数"""
     # メッセージ用のセッション状態を初期化
@@ -100,7 +103,7 @@ def display_practice_interface(df, get_kanji_function, level_name):
     st.sidebar.header("データ概要")
     st.sidebar.write(f"総データ数: {len(df)}行")
     st.sidebar.write(f"問題数: {st.session_state.question_count}")
-    
+    st.sidebar.write(f'レベル:{player_level}')
     # 難易度別の件数を表示
     difficulty_counts = df['難易度'].value_counts()
     st.sidebar.write("難易度別件数:")
@@ -150,6 +153,7 @@ def display_practice_interface(df, get_kanji_function, level_name):
         # 正解判定
         if answer_1 and answer_1 == st.session_state.current_kanji['読み']:
             st.success('oyatsu「正解！」')
+
             st.session_state.show_answer = True
             
         elif answer_1 and answer_1 != st.session_state.current_kanji['読み']:
