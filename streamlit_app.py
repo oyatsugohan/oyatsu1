@@ -153,7 +153,7 @@ def display_practice_interface(df, get_kanji_function, level_name):
         if answer_1 and answer_1 == st.session_state.current_kanji['読み']:
             st.success('oyatsu「正解！」')
             # 経験値を減らす
-            st.session_state.experience_points -= 10
+            st.session_state.experience_points -= 5
             st.session_state.show_answer = True
             
             # レベルアップ判定
