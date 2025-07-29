@@ -103,8 +103,8 @@ def display_practice_interface(df, get_kanji_function, level_name):
     st.sidebar.header("データ概要")
     st.sidebar.write(f"総データ数: {len(df)}行")
     st.sidebar.write(f"問題数: {st.session_state.question_count}")
-    st.sidebar.write(f'あなたのレベル: {str(player_level)}')
-    st.sidebar.write(f'残り経験値: {str(experience_points)}')
+    st.sidebar.write(f'あなたのレベル: '+str(player_level))
+    st.sidebar.write(f'残り経験値: '+str(experience_points))
     # 難易度別の件数を表示
     difficulty_counts = df['難易度'].value_counts()
     st.sidebar.write("難易度別件数:")
