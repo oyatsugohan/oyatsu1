@@ -202,11 +202,23 @@ def display_practice_interface(df, get_kanji_function, level_name):
                 st.session_state.show_answer = True
                 st.rerun()
         
-        # 正解判定
-        if answer_1 and answer_1 == st.session_state.current_kanji['読み']:
-            st.success('oyatsu「正解！」')
+        # 正解判定（一度だけ実行されるように制御）
+        if answer_1 and answer_1 == st.session_state.current_kanji['読み'] and not st.session_state.show_answer:
+            # 難易度に応じて経験値を設定
+            difficulty = st.session_state.current_kanji['難易度']
+            if difficulty == '漢検三級':
+                exp_gain = 10
+            elif difficulty == '漢検二級':
+                exp_gain = 15
+            elif difficulty == '漢検一級':
+                exp_gain = 20
+            else:
+                exp_gain = 5  # デフォルト値
+            
+            st.success(f'oyatsu「正解！+{exp_gain}EXP獲得！」')
+            
             # 経験値を増やす
-            st.session_state.experience_points += 5
+            st.session_state.experience_points += exp_gain
             st.session_state.show_answer = True
             
             # 現在のレベルの必要経験値を取得
@@ -233,7 +245,7 @@ def display_practice_interface(df, get_kanji_function, level_name):
                 # レベルアップメッセージを設定
                 st.session_state.level_up_message = f'🎉 レベルアップ！ レベル{st.session_state.player_level}になりました！'
             
-        elif answer_1 and answer_1 != st.session_state.current_kanji['読み']:
+        elif answer_1 and answer_1 != st.session_state.current_kanji['読み'] and not st.session_state.show_answer:
             st.error('oyatsu「惜しい！もう一度考えてみて！」')
         
         # 詳細情報を表示（正解時またはギブアップ時）
