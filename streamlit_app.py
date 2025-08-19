@@ -3,6 +3,8 @@ import pandas as pd
 import random
 import os
 import time
+import json
+from datetime import datetime
 
 def load_kanji_data():
     """漢字リスト.xlsxを読み込む"""
@@ -95,6 +97,34 @@ def calculate_required_exp(level):
     base_exp = 100
     return int(base_exp * (1.3 ** (level - 1)))
 
+def save_game_data():
+    """ゲームデータをJSONで保存"""
+    save_data = {
+        "player_name": st.session_state.get('player_name', ''),
+        "player_level": st.session_state.get('player_level', 1),
+        "experience_points": st.session_state.get('experience_points', 100),
+        "question_count": st.session_state.get('question_count', 0),
+        "save_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "version": "1.0"
+    }
+    return json.dumps(save_data, ensure_ascii=False, indent=2)
+
+def load_game_data(uploaded_file):
+    """ゲームデータをJSONから読み込み"""
+    try:
+        # アップロードされたファイルからJSONを読み込み
+        save_data = json.load(uploaded_file)
+        
+        # データをセッション状態に設定
+        st.session_state.player_name = save_data.get('player_name', '')
+        st.session_state.player_level = save_data.get('player_level', 1)
+        st.session_state.experience_points = save_data.get('experience_points', 100)
+        st.session_state.question_count = save_data.get('question_count', 0)
+        
+        return True, save_data.get('save_date', '不明')
+    except Exception as e:
+        return False, str(e)
+
 def display_practice_interface(df, get_kanji_function, level_name):
     """練習インターフェースを表示する共通関数"""
     # メッセージ用のセッション状態を初期化
@@ -107,11 +137,14 @@ def display_practice_interface(df, get_kanji_function, level_name):
     current_required_exp = calculate_required_exp(st.session_state.player_level)
     
     # データの概要を表示
-    st.sidebar.header("データ概要")
-    st.sidebar.write(f"総データ数: {len(df)}行")
-    st.sidebar.write(f"問題数: {st.session_state.question_count}")
+    st.sidebar.header("プレイヤー情報")
+    st.sidebar.write(f'プレイヤー名: {st.session_state.get("player_name", "未設定")}')
     st.sidebar.write(f'あなたのレベル: {st.session_state.player_level}')
     st.sidebar.write(f'残り経験値: {st.session_state.experience_points} / {current_required_exp}')
+    st.sidebar.write(f"問題数: {st.session_state.question_count}")
+    
+    st.sidebar.header("データ概要")
+    st.sidebar.write(f"総データ数: {len(df)}行")
     
     # 難易度別の件数を表示
     difficulty_counts = df['難易度'].value_counts()
@@ -231,7 +264,50 @@ st.title("漢検練習帳")
 st.write("???「やあ！」")
 st.write('???「僕はoyatsu!　君をサポートするためにきたよ！」')
 
-player_name = st.text_input('oyatsu「君の名前を教えてほしいな」')
+# セーブ・ロード機能
+st.sidebar.header("💾 セーブ・ロード")
+
+# セーブ機能
+if st.sidebar.button("📥 セーブデータ作成"):
+    save_json = save_game_data()
+    st.sidebar.download_button(
+        label="⬇️ セーブファイルをダウンロード",
+        data=save_json,
+        file_name=f"kanji_save_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+        mime="application/json"
+    )
+    st.sidebar.success("セーブデータを作成しました！")
+
+# ロード機能
+uploaded_file = st.sidebar.file_uploader(
+    "📁 セーブファイルを選択",
+    type=['json'],
+    help="以前保存したセーブファイル(.json)をアップロードしてください"
+)
+
+if uploaded_file is not None:
+    success, message = load_game_data(uploaded_file)
+    if success:
+        st.sidebar.success(f"✅ データを読み込みました！\n保存日時: {message}")
+        st.rerun()
+    else:
+        st.sidebar.error(f"❌ データの読み込みに失敗しました: {message}")
+
+st.sidebar.markdown("---")
+
+# プレイヤー名入力
+if 'player_name' not in st.session_state:
+    st.session_state.player_name = ''
+
+player_name = st.text_input(
+    'oyatsu「君の名前を教えてほしいな」', 
+    value=st.session_state.player_name,
+    key='player_name_input'
+)
+
+# プレイヤー名をセッション状態に保存
+if player_name != st.session_state.player_name:
+    st.session_state.player_name = player_name
 
 if player_name != '':
     st.write('oyatsu「'+player_name + 'っていうのかぁ')
