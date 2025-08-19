@@ -193,7 +193,7 @@ def display_practice_interface(df, get_kanji_function, level_name):
         col_input, col_giveup = st.columns([3, 1])
         
         with col_input:
-            answer_1 = st.text_input('oyatsu「この漢字なんだ？(送り仮名があるときは送り仮名も含めてひらがなで答えてね)」', key=f'answer_{st.session_state.question_count}_{level_name}')
+            answer_1 = st.text_input('oyatsu「この漢字はなんでしょう？　送り仮名があるときは送り仮名も含めてひらがなで答えてね」', key=f'answer_{st.session_state.question_count}_{level_name}')
         
         with col_giveup:
             st.write("")  # 空行で位置調整
@@ -224,7 +224,7 @@ def display_practice_interface(df, get_kanji_function, level_name):
                 st.session_state.level_up_message = f'🎉 レベルアップ！ レベル{st.session_state.player_level}になりました！'
             
         elif answer_1 and answer_1 != st.session_state.current_kanji['読み']:
-            st.error('oyatsu「惜しい！もう一度考えてみて！」')
+            st.error('oyatsu「もう一度考えてみて！　一緒に頑張ろう！」')
         
         # 詳細情報を表示（正解時またはギブアップ時）
         if st.session_state.show_answer:
@@ -310,8 +310,8 @@ if player_name != st.session_state.player_name:
     st.session_state.player_name = player_name
 
 if player_name != '':
-    st.write('oyatsu「'+player_name + 'っていうのかぁ')
-    st.write('oyatsu「これからよろしくね！' + player_name + '」！')
+    st.write('oyatsu「'+player_name + 'っていうのかぁ」')
+    st.write('oyatsu「これからよろしくね！' + player_name + '！」')
     st.write('oyatsu「今日は何しようか？」')
     
     # セッション状態の初期化
@@ -367,9 +367,9 @@ if player_name != '':
             display_practice_interface(df, get_random_kanji_3rd_grade, '三級')
         
         elif st.session_state.selected_level == '二級':
-            st.write('oyatsu「漢検二級だね。OK　任せてよ！」')
+            st.write('oyatsu「漢検二級だね。一緒に頑張ろう！」')
             display_practice_interface(df, get_random_kanji_2nd_grade, '二級')
         
         elif st.session_state.selected_level == '一級':
-            st.write('oyatsu「漢検一級だね。OK　任せてよ！」')
+            st.write('oyatsu「漢検一級だね。難しい問題ばかりだから覚悟してね！」')
             display_practice_interface(df, get_random_kanji_1st_grade, '一級')
