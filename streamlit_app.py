@@ -103,12 +103,15 @@ def display_practice_interface(df, get_kanji_function, level_name):
     if 'level_up_message' not in st.session_state:
         st.session_state.level_up_message = ""
     
+    # 現在のレベルの必要経験値を計算
+    current_required_exp = calculate_required_exp(st.session_state.player_level)
+    
     # データの概要を表示
     st.sidebar.header("データ概要")
     st.sidebar.write(f"総データ数: {len(df)}行")
     st.sidebar.write(f"問題数: {st.session_state.question_count}")
     st.sidebar.write(f'あなたのレベル: {st.session_state.player_level}')
-    st.sidebar.write(f'残り経験値: {st.session_state.experience_points}')
+    st.sidebar.write(f'残り経験値: {st.session_state.experience_points} / {current_required_exp}')
     
     # 難易度別の件数を表示
     difficulty_counts = df['難易度'].value_counts()
@@ -177,10 +180,22 @@ def display_practice_interface(df, get_kanji_function, level_name):
             if st.session_state.experience_points <= 0:
                 old_level = st.session_state.player_level
                 st.session_state.player_level += 1
-                # 現在のレベルに必要な経験値を計算
-                required_exp = calculate_required_exp(st.session_state.player_level)
-                # 余った分を次のレベルに繰り越し（ボーナス30を引く）
-                st.session_state.experience_points = required_exp + st.session_state.experience_points - 30
+                
+                # 新しいレベルに必要な経験値を計算
+                new_required_exp = calculate_required_exp(st.session_state.player_level)
+                
+                # 余った分を次のレベルに繰り越し（ボーナス30を引いて、新しいレベルの経験値から差し引く）
+                overflow = abs(st.session_state.experience_points)  # 余った経験値（正の値）
+                bonus = 30  # レベルアップボーナス
+                st.session_state.experience_points = new_required_exp - overflow - bonus
+                
+                # 負の値になった場合の処理（さらにレベルアップする場合）
+                while st.session_state.experience_points <= 0:
+                    st.session_state.player_level += 1
+                    new_required_exp = calculate_required_exp(st.session_state.player_level)
+                    overflow = abs(st.session_state.experience_points)
+                    st.session_state.experience_points = new_required_exp - overflow - bonus
+                
                 # レベルアップメッセージを設定
                 st.session_state.level_up_message = f'🎉 レベルアップ！ レベル{st.session_state.player_level}になりました！'
             
