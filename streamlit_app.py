@@ -102,7 +102,7 @@ def save_game_data():
     save_data = {
         "player_name": st.session_state.get('player_name', ''),
         "player_level": st.session_state.get('player_level', 1),
-        "experience_points": st.session_state.get('experience_points', 100),
+        "experience_points": st.session_state.get('experience_points', 0),  # 0からスタート
         "question_count": st.session_state.get('question_count', 0),
         "save_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "version": "1.0"
@@ -118,7 +118,7 @@ def load_game_data(uploaded_file):
         # データをセッション状態に設定
         st.session_state.player_name = save_data.get('player_name', '')
         st.session_state.player_level = save_data.get('player_level', 1)
-        st.session_state.experience_points = save_data.get('experience_points', 100)
+        st.session_state.experience_points = save_data.get('experience_points', 0)  # 0からスタート
         st.session_state.question_count = save_data.get('question_count', 0)
         
         return True, save_data.get('save_date', '不明')
@@ -140,7 +140,7 @@ def display_practice_interface(df, get_kanji_function, level_name):
     st.sidebar.header("プレイヤー情報")
     st.sidebar.write(f'プレイヤー名: {st.session_state.get("player_name", "未設定")}')
     st.sidebar.write(f'あなたのレベル: {st.session_state.player_level}')
-    st.sidebar.write(f'残り経験値: {st.session_state.experience_points} / {current_required_exp}')
+    st.sidebar.write(f'経験値: {st.session_state.experience_points} / {current_required_exp}')
     st.sidebar.write(f"問題数: {st.session_state.question_count}")
     
     st.sidebar.header("データ概要")
@@ -193,7 +193,7 @@ def display_practice_interface(df, get_kanji_function, level_name):
         col_input, col_giveup = st.columns([3, 1])
         
         with col_input:
-            answer_1 = st.text_input('oyatsu「この漢字はなんでしょう？　送り仮名があるときは送り仮名も含めてひらがなで答えてね」', key=f'answer_{st.session_state.question_count}_{level_name}')
+            answer_1 = st.text_input('oyatsu「この漢字なんだ？(送り仮名があるときは送り仮名も含めてひらがなで答えてね)」', key=f'answer_{st.session_state.question_count}_{level_name}')
         
         with col_giveup:
             st.write("")  # 空行で位置調整
@@ -205,26 +205,36 @@ def display_practice_interface(df, get_kanji_function, level_name):
         # 正解判定
         if answer_1 and answer_1 == st.session_state.current_kanji['読み']:
             st.success('oyatsu「正解！」')
-            # 経験値を減らす
-            st.session_state.experience_points -= 5
+            # 経験値を増やす
+            st.session_state.experience_points += 5
             st.session_state.show_answer = True
             
+            # 現在のレベルの必要経験値を取得
+            current_required_exp = calculate_required_exp(st.session_state.player_level)
+            
             # レベルアップ判定
-            if st.session_state.experience_points <= 0:
+            if st.session_state.experience_points >= current_required_exp:
                 # レベルアップ処理
                 st.session_state.player_level += 1
                 
-                # 新しいレベルの必要経験値を取得
-                new_required_exp = calculate_required_exp(st.session_state.player_level)
+                # 余った経験値を次のレベルに繰り越し
+                overflow = st.session_state.experience_points - current_required_exp
+                st.session_state.experience_points = overflow
                 
-                # レベルアップ時は満タンの状態にする
-                st.session_state.experience_points = new_required_exp
+                # 連続レベルアップの処理
+                while True:
+                    new_required_exp = calculate_required_exp(st.session_state.player_level)
+                    if st.session_state.experience_points >= new_required_exp:
+                        st.session_state.player_level += 1
+                        st.session_state.experience_points -= new_required_exp
+                    else:
+                        break
                 
                 # レベルアップメッセージを設定
                 st.session_state.level_up_message = f'🎉 レベルアップ！ レベル{st.session_state.player_level}になりました！'
             
         elif answer_1 and answer_1 != st.session_state.current_kanji['読み']:
-            st.error('oyatsu「もう一度考えてみて！　一緒に頑張ろう！」')
+            st.error('oyatsu「惜しい！もう一度考えてみて！」')
         
         # 詳細情報を表示（正解時またはギブアップ時）
         if st.session_state.show_answer:
@@ -310,8 +320,8 @@ if player_name != st.session_state.player_name:
     st.session_state.player_name = player_name
 
 if player_name != '':
-    st.write('oyatsu「'+player_name + 'っていうのかぁ」')
-    st.write('oyatsu「これからよろしくね！' + player_name + '！」')
+    st.write('oyatsu「'+player_name + 'っていうのかぁ')
+    st.write('oyatsu「これからよろしくね！' + player_name + '」！')
     st.write('oyatsu「今日は何しようか？」')
     
     # セッション状態の初期化
@@ -328,7 +338,7 @@ if player_name != '':
     if 'player_level' not in st.session_state:
         st.session_state.player_level = 1
     if 'experience_points' not in st.session_state:
-        st.session_state.experience_points = 100
+        st.session_state.experience_points = 0  # 0からスタート
     
     # ボタンの配置
     col1, col2, col3 = st.columns(3)
@@ -367,9 +377,9 @@ if player_name != '':
             display_practice_interface(df, get_random_kanji_3rd_grade, '三級')
         
         elif st.session_state.selected_level == '二級':
-            st.write('oyatsu「漢検二級だね。一緒に頑張ろう！」')
+            st.write('oyatsu「漢検二級だね。OK　任せてよ！」')
             display_practice_interface(df, get_random_kanji_2nd_grade, '二級')
         
         elif st.session_state.selected_level == '一級':
-            st.write('oyatsu「漢検一級だね。難しい問題ばかりだから覚悟してね！」')
+            st.write('oyatsu「漢検一級だね。OK　任せてよ！」')
             display_practice_interface(df, get_random_kanji_1st_grade, '一級')
