@@ -178,23 +178,14 @@ def display_practice_interface(df, get_kanji_function, level_name):
             
             # レベルアップ判定
             if st.session_state.experience_points <= 0:
-                old_level = st.session_state.player_level
+                # レベルアップ処理
                 st.session_state.player_level += 1
                 
-                # 新しいレベルに必要な経験値を計算
+                # 新しいレベルの必要経験値を取得
                 new_required_exp = calculate_required_exp(st.session_state.player_level)
                 
-                # 余った分を次のレベルに繰り越し（ボーナス30を引いて、新しいレベルの経験値から差し引く）
-                overflow = abs(st.session_state.experience_points)  # 余った経験値（正の値）
-                bonus = 30  # レベルアップボーナス
-                st.session_state.experience_points = new_required_exp - overflow - bonus
-                
-                # 負の値になった場合の処理（さらにレベルアップする場合）
-                while st.session_state.experience_points <= 0:
-                    st.session_state.player_level += 1
-                    new_required_exp = calculate_required_exp(st.session_state.player_level)
-                    overflow = abs(st.session_state.experience_points)
-                    st.session_state.experience_points = new_required_exp - overflow - bonus
+                # レベルアップ時は満タンの状態にする
+                st.session_state.experience_points = new_required_exp
                 
                 # レベルアップメッセージを設定
                 st.session_state.level_up_message = f'🎉 レベルアップ！ レベル{st.session_state.player_level}になりました！'
