@@ -286,37 +286,6 @@ st.title("漢検練習帳")
 st.write("???「やあ！」")
 st.write('???「僕はoyatsu!　君をサポートするためにきたよ！」')
 
-# セーブ・ロード機能
-st.sidebar.header("💾 セーブ・ロード")
-
-# セーブ機能
-if st.sidebar.button("📥 セーブデータ作成"):
-    save_json = save_game_data()
-    st.sidebar.download_button(
-        label="⬇️ セーブファイルをダウンロード",
-        data=save_json,
-        file_name=f"kanji_save_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-        mime="application/json"
-    )
-    st.sidebar.success("セーブデータを作成しました！")
-
-# ロード機能
-uploaded_file = st.sidebar.file_uploader(
-    "📁 セーブファイルを選択",
-    type=['json'],
-    help="以前保存したセーブファイル(.json)をアップロードしてください"
-)
-
-if uploaded_file is not None:
-    success, message = load_game_data(uploaded_file)
-    if success:
-        st.sidebar.success(f"✅ データを読み込みました！\n保存日時: {message}")
-        st.rerun()
-    else:
-        st.sidebar.error(f"❌ データの読み込みに失敗しました: {message}")
-
-st.sidebar.markdown("---")
-
 # プレイヤー名入力
 if 'player_name' not in st.session_state:
     st.session_state.player_name = ''
