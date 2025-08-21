@@ -333,7 +333,7 @@ if player_name != st.session_state.player_name:
 
 if player_name != '':
     st.write('oyatsu「'+player_name + 'っていうのかぁ')
-    st.write('oyatsu「これからよろしくね！' + player_name + '」！')
+    st.write('oyatsu「これからよろしくね！' + player_name + '！」')
     st.write('oyatsu「今日は何しようか？」')
     
     # セッション状態の初期化
